@@ -630,6 +630,10 @@ class Settings extends Component {
                 PandaFirmwareHex: pandaFirmwareHex,
                 PandaDongleId: pandaDongleId,
                 CommunityFeaturesToggle: communityFeatures,
+                LaneChangeEnabled: laneChangeEnabled,
+                LongControlEnabled: longControlEnabled,
+                MadModeEnabled: madModeEnabled,
+                AutoLaneChangeEnabled: autoLaneChangeEnabled,
             },
         } = this.props;
         const { expandedCell } = this.state;
@@ -661,6 +665,39 @@ class Settings extends Component {
                             isExpanded={ expandedCell == 'communityFeatures' }
                             handleExpanded={ () => this.handleExpanded('communityFeatures') }
                             handleChanged={ this.props.setCommunityFeatures } />
+                            { !parseInt(isPassive) && !!parseInt(communityFeatures) ? (
+                                <X.TableCell
+                                    type='switch'
+                                    title='HKGロングコントロールを有効化'
+                                    value={ !!parseInt(longControlEnabled) }
+                                    iconSource={ Icons.openpilot }
+                                    description='注意: これはベータ版です。注意してください!'
+                                    isExpanded={ expandedCell == 'longcontrol_enabled' }
+                                    handleExpanded={ () => this.handleExpanded('longcontrol_enabled') }
+                                    handleChanged={ this.props.setLongControlEnabled } />
+                            ) : null }
+                            { !parseInt(isPassive) && !!parseInt(communityFeatures) && !parseInt(longControlEnabled) ? (
+                                <X.TableCell
+                                    type='switch'
+                                    title='HKG MADモードを有効化'
+                                    value={ !!parseInt(madModeEnabled) }
+                                    iconSource={ Icons.openpilot }
+                                    description='ロングコントロールのない車に限ります。'
+                                    isExpanded={ expandedCell == 'madMode_enabled' }
+                                    handleExpanded={ () => this.handleExpanded('madMode_enabled') }
+                                    handleChanged={ this.props.setMadModeEnabled } />
+                            ) : null }
+                            { !parseInt(isPassive) && !!parseInt(communityFeatures) && !!parseInt(laneChangeEnabled) ? (
+                                <X.TableCell
+                                    type='switch'
+                                    title='自動車線変更アシストを有効化'
+                                    value={ !!parseInt(autoLaneChangeEnabled) }
+                                    iconSource={ Icons.openpilot }
+                                    description='注意: これはベータ版です。注意してください!'
+                                    isExpanded={ expandedCell == 'autoLaneChange_enabled' }
+                                    handleExpanded={ () => this.handleExpanded('autoLaneChange_enabled') }
+                                    handleChanged={ this.props.setAutoLaneChangeEnabled } />
+                            ) : null }
                         <X.TableCell
                             type='switch'
                             title='SSHを有効化'
@@ -948,6 +985,18 @@ const mapDispatchToProps = dispatch => ({
     },
     setLaneChangeEnabled: (laneChangeEnabled) => {
         dispatch(updateParam(Params.KEY_LANE_CHANGE_ENABLED, (laneChangeEnabled | 0).toString()));
+    },
+    setLongControlEnabled: (longControlEnabled) => {
+        dispatch(updateParam(Params.KEY_LONG_CONTROL_ENABLED, (longControlEnabled | 0).toString()));
+        if (longControlEnabled == 1) {
+          dispatch(updateParam(Params.KEY_MAD_MODE_ENABLED, (0).toString()));
+        }
+    },
+    setMadModeEnabled: (madModeEnabled) => {
+        dispatch(updateParam(Params.KEY_MAD_MODE_ENABLED, (madModeEnabled | 0).toString()));
+    },
+    setAutoLaneChangeEnabled: (autoLaneChangeEnabled) => {
+        dispatch(updateParam(Params.KEY_AUTO_LANE_CHANGE_ENABLED, (autoLaneChangeEnabled | 0).toString()));
     },
     deleteParam: (param) => {
         dispatch(deleteParam(param));
